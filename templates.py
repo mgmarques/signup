@@ -42,6 +42,7 @@ class Handler(webapp2.RequestHandler):
 	def render(self, template, **kw):
 		self.write(self.render_str(template, **kw))
 
+
 class MainPage(Handler):
     def get(self):	
 	self.render("signup.html", username="", password="", verify="", email="",
@@ -88,13 +89,19 @@ class MainPage(Handler):
 	    email_err = ""
 		
 	if (v_user & v_pass & v_verify & v_email & check):
-	   self.render("welcome.html", username = username)
+	   self.redirect('/welcome?username=%s' % username)
 	else:
 	    self.render("signup.html", username = username, user_err = user_err,
 		        password = "", pass_err = pass_err,
 			verify = "", ver_err = ver_err,
 			email = email, email_err = email_err)
 
+
+class WelcomePage(Handler):
+   def get(self):	
+	username = self.request.get("username")
+	self.render("welcome.html", username = username)
+
 app = webapp2.WSGIApplication([('/', MainPage),
-			      ],
+			       ('/welcome', WelcomePage)],
 			     debug=True)
